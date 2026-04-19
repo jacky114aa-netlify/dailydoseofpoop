@@ -103,7 +103,7 @@
 
     function calculateScore(r) {
       let score = 100;
-      score -= Math.abs(3 - r.consistency) * 15;
+      score -= Math.abs(3 - Number(r.consistency)) * 15;
       if (["黑色","綠色","黃色"].includes(r.color)) score -= 10;
       if (["顆粒狀","液體"].includes(r.shape)) score -= 10;
       if (r.pain === "是") score -= 15;
@@ -162,7 +162,7 @@
       const data = {
         date: form.date.value,
         time: form.time.value,
-        consistency: parseInt(form.consistency.value),
+        consistency: form.consistency.value, // 保持字串存入
         color: form.color.value,
         shape: form.shape.value,
         pain: form.pain.value,
