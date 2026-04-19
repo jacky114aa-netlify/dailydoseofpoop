@@ -2,15 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Form</title>
+  <title>Favorite Season Survey</title>
 </head>
 <body>
-  <form name="favorite-season-survey" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
-    <input type="hidden" name="form-name" value="favorite-season-survey" />
-    <input type="text" name="name" />
-    <select name="season"></select>
-    <textarea name="reason"></textarea>
-    <input name="bot-field" />
+  <h1>Favorite Season Survey</h1>
+  <form action="https://formspree.io/f/yourFormID" method="POST">
+    <label>
+      Name:
+      <input type="text" name="name" required />
+    </label>
+    <br />
+
+    <label>
+      Favorite Season:
+      <select name="season" required>
+        <option value="">--Please choose--</option>
+        <option value="spring">Spring</option>
+        <option value="summer">Summer</option>
+        <option value="autumn">Autumn</option>
+        <option value="winter">Winter</option>
+      </select>
+    </label>
+    <br />
+
+    <label>
+      Why?
+      <textarea name="reason" required></textarea>
+    </label>
+    <br />
+
+    <button type="submit">Submit</button>
   </form>
 </body>
 </html>
