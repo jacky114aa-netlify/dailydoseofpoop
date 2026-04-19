@@ -11,6 +11,12 @@
     input, select, textarea, button { margin-top: 5px; padding: 5px; width: 100%; }
     .record { border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
     canvas { margin-top: 20px; }
+    canvas {
+  margin-top: 20px;
+  width: 100% !important;   /* 佔盡容器寬度 */
+  height: 500px !important; /* 高度拉大 */
+}
+
   </style>
 </head>
 <body>
@@ -86,8 +92,8 @@
   <div id="records"></div>
 
   <h2>趨勢圖</h2>
-  <canvas id="trendChart" width="400" height="200"></canvas>
-
+  <canvas id="trendChart">
+    
   <script>
     const form = document.getElementById('poopForm');
     const recordsDiv = document.getElementById('records');
@@ -122,18 +128,26 @@
       const labels = records.map(r => r.date);
       const scores = records.map(r => calculateScore(r.consistency));
       if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: '健康分數',
-            data: scores,
-            borderColor: 'blue',
-            fill: false
-          }]
-        }
-      });
+chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '健康分數',
+      data: scores,
+      borderColor: 'blue',
+      fill: false
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,   // 取消固定比例，配合 CSS 高度
+    scales: {
+      y: { beginAtZero: true, max: 100 }
+    }
+  }
+});
+
     }
 
     form.addEventListener('submit', e => {
