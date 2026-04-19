@@ -2,36 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Favorite Season Survey</title>
+  <title>Daily Poop Tracker</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea, button { margin-top: 5px; padding: 5px; width: 100%; }
+    .record { border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
+  </style>
 </head>
 <body>
-  <h1>Favorite Season Survey</h1>
-  <form action="https://formspree.io/f/yourFormID" method="POST">
+  <h1>Daily Poop Tracker</h1>
+  <form id="poopForm">
     <label>
-      Name:
-      <input type="text" name="name" required />
+      Date:
+      <input type="date" name="date" required />
     </label>
-    <br />
-
     <label>
-      Favorite Season:
-      <select name="season" required>
-        <option value="">--Please choose--</option>
-        <option value="spring">Spring</option>
-        <option value="summer">Summer</option>
-        <option value="autumn">Autumn</option>
-        <option value="winter">Winter</option>
+      Consistency (1=hard, 5=soft):
+      <select name="consistency" required>
+        <option value="">--Choose--</option>
+        <option value="1">1 - Very hard</option>
+        <option value="2">2 - Hard</option>
+        <option value="3">3 - Normal</option>
+        <option value="4">4 - Soft</option>
+        <option value="5">5 - Very soft</option>
       </select>
     </label>
-    <br />
-
     <label>
-      Why?
-      <textarea name="reason" required></textarea>
+      Notes:
+      <textarea name="notes"></textarea>
     </label>
-    <br />
-
-    <button type="submit">Submit</button>
+    <button type="submit">Save Record</button>
   </form>
+
+  <h2>Your Records</h2>
+  <div id="records"></div>
+
+  <script>
+    const form = document.getElementById('poopForm');
+    const recordsDiv = document.getElementById('records');
+
+    function loadRecords() {
+      recordsDiv.innerHTML = '';
+      const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
+      records.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'record';
+        div.innerHTML = `<strong>${r.date}</strong><br>
+                         Consistency: ${r.consistency}<br>
+                         Notes: ${r.notes}<br>
+                         Score: ${calculateScore(r.consistency)}`;
+        recordsDiv.appendChild(div);
+      });
+    }
+
+    function calculateScore(consistency) {
+      // simple scoring: closer to 3 = better
+      return 100 - Math.abs(3 - consistency) * 20;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = {
+        date: form.date.value,
+        consistency: parseInt(form.consistency.value),
+        notes: form.notes.value
+      };
+      const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
+      records.push(data);
+      localStorage.setItem('poopRecords', JSON.stringify(records));
+      form.reset();
+      loadRecords();
+    });
+
+    loadRecords();
+  </script>
 </body>
 </html>
