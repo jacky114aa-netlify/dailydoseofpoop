@@ -160,15 +160,15 @@
     form.addEventListener('submit', e => {
       e.preventDefault();
       const data = {
-        date: form.elements["date"].value,
-        time: form.elements["time"].value,
-        consistency: form.elements["consistency"].value,
-        color: form.elements["color"].value,
-        shape: form.elements["shape"].value,
-        pain: form.elements["pain"].value,
-        blood: form.elements["blood"].value,
-        smooth: form.elements["smooth"].value,
-        notes: form.elements["notes"].value
+        date: form.date.value,
+        time: form.time.value,
+        consistency: form.consistency.value,
+        color: form.color.value,
+        shape: form.shape.value,
+        pain: form.pain.value,
+        blood: form.blood.value,
+        smooth: form.smooth.value,
+        notes: form.notes.value
       };
       const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
       records.push(data);
