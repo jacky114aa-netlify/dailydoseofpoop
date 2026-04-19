@@ -1,176 +1,70 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-  <meta charset="utf-8" />
-  <title>每日排便紀錄</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    h1 { color: #333; }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea, button { margin-top: 5px; padding: 5px; width: 100%; }
-    .record { border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
-    canvas { margin-top: 20px; }
-    canvas {
-  margin-top: 20px;
-  width: 100% !important;   /* 佔盡容器寬度 */
-  height: 500px !important; /* 高度拉大 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+  color: #333;
 }
 
-  </style>
-</head>
-<body>
-  <h1>每日排便紀錄</h1>
-  <form id="poopForm">
-    <label>日期:
-      <input type="date" name="date" required />
-    </label>
-    <label>時間:
-      <select name="time" required>
-        <option value="">--請選擇--</option>
-        <option value="早上">早上</option>
-        <option value="中午">中午</option>
-        <option value="晚上">晚上</option>
-      </select>
-    </label>
-    <label>稠度 (1=硬, 5=軟):
-      <select name="consistency" required>
-        <option value="">--請選擇--</option>
-        <option value="1">1 - 非常硬</option>
-        <option value="2">2 - 偏硬</option>
-        <option value="3">3 - 正常</option>
-        <option value="4">4 - 偏軟</option>
-        <option value="5">5 - 非常軟</option>
-      </select>
-    </label>
-    <label>顏色:
-      <select name="color" required>
-        <option value="">--請選擇--</option>
-        <option value="淺棕">淺棕</option>
-        <option value="深棕">深棕</option>
-        <option value="黑色">黑色</option>
-        <option value="綠色">綠色</option>
-        <option value="黃色">黃色</option>
-      </select>
-    </label>
-    <label>形狀:
-      <select name="shape" required>
-        <option value="">--請選擇--</option>
-        <option value="條狀">條狀</option>
-        <option value="顆粒狀">顆粒狀</option>
-        <option value="液體">液體</option>
-      </select>
-    </label>
-    <label>是否有腹痛/不適:
-      <select name="pain" required>
-        <option value="">--請選擇--</option>
-        <option value="是">是</option>
-        <option value="否">否</option>
-      </select>
-    </label>
-    <label>是否有血液:
-      <select name="blood" required>
-        <option value="">--請選擇--</option>
-        <option value="是">是</option>
-        <option value="否">否</option>
-      </select>
-    </label>
-    <label>排便是否暢通:
-      <select name="smooth" required>
-        <option value="">--請選擇--</option>
-        <option value="暢通">暢通</option>
-        <option value="不暢通">不暢通</option>
-      </select>
-    </label>
-    <label>備註:
-      <textarea name="notes"></textarea>
-    </label>
-    <button type="submit">儲存紀錄</button>
-  </form>
+h1 {
+  background: #007aff;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
 
-  <h2>你的紀錄</h2>
-  <div id="records"></div>
+form {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
 
-  <h2>趨勢圖</h2>
-  <canvas id="trendChart">
-    
-  <script>
-    const form = document.getElementById('poopForm');
-    const recordsDiv = document.getElementById('records');
-    const ctx = document.getElementById('trendChart').getContext('2d');
-    let chart;
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 500;
+}
 
-    function loadRecords() {
-      recordsDiv.innerHTML = '';
-      const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
-      records.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'record';
-        div.innerHTML = `<strong>${r.date} (${r.time})</strong><br>
-                         稠度: ${r.consistency}<br>
-                         顏色: ${r.color}<br>
-                         形狀: ${r.shape}<br>
-                         腹痛/不適: ${r.pain}<br>
-                         血液: ${r.blood}<br>
-                         暢通: ${r.smooth}<br>
-                         備註: ${r.notes}<br>
-                         分數: ${calculateScore(r.consistency)}`;
-        recordsDiv.appendChild(div);
-      });
-      updateChart(records);
-    }
+input, select, textarea, button {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 16px;
+}
 
-    function calculateScore(consistency) {
-      return 100 - Math.abs(3 - consistency) * 20;
-    }
+button {
+  background: #007aff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    function updateChart(records) {
-      const labels = records.map(r => r.date);
-      const scores = records.map(r => calculateScore(r.consistency));
-      if (chart) chart.destroy();
-chart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [{
-      label: '健康分數',
-      data: scores,
-      borderColor: 'blue',
-      fill: false
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,   // 取消固定比例，配合 CSS 高度
-    scales: {
-      y: { beginAtZero: true, max: 100 }
-    }
-  }
-});
+button:hover {
+  background: #005bb5;
+}
 
-    }
+.record {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px auto;
+  max-width: 600px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const data = {
-        date: form.date.value,
-        time: form.time.value,
-        consistency: parseInt(form.consistency.value),
-        color: form.color.value,
-        shape: form.shape.value,
-        pain: form.pain.value,
-        blood: form.blood.value,
-        smooth: form.smooth.value,
-        notes: form.notes.value
-      };
-      const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
-      records.push(data);
-      localStorage.setItem('poopRecords', JSON.stringify(records));
-      form.reset();
-      loadRecords();
-    });
-
-    loadRecords();
-  </script>
-</body>
-</html>
+canvas {
+  margin-top: 20px;
+  width: 100% !important;
+  height: 500px !important;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
