@@ -196,7 +196,7 @@
       const scores = records.map(r => calculateScore(r.consistency));
       if (chart) chart.destroy();
 
-      // 如果紀錄少於 2 筆，用 bar chart；否則用 line chart
+      // 少於2筆用 bar，多於2筆用 line
       const chartType = records.length < 2 ? 'bar' : 'line';
 
       chart = new Chart(ctx, {
@@ -214,9 +214,18 @@
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,   // 取消固定比例，配合 CSS 高度
+          maintainAspectRatio: false,   // 關閉固定比例，交由 CSS 控制
           scales: {
-            y: { beginAtZero: true, max: 100 }
+            y: {
+              beginAtZero: true,
+              max: 100
+            },
+            x: {
+              ticks: {
+                maxRotation: 0,
+                autoSkip: true
+              }
+            }
           }
         }
       });
