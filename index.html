@@ -88,6 +88,7 @@
 <body>
   <h1>每日排便紀錄</h1>
   <form id="poopForm">
+    <!-- 表單同之前一樣 -->
     <label>日期:<input type="date" name="date" required /></label>
     <label>時間:
       <select name="time" required>
@@ -215,22 +216,12 @@
             y: {
               beginAtZero: true,
               max: 100,
-              grid: {
-                color: "rgba(0,0,0,0.05)"   // 淡格線
-              },
-              ticks: {
-                font: { size: 20 }
-              }
+              grid: { color: "rgba(0,0,0,0.05)" },
+              ticks: { font: { size: 20 } }
             },
             x: {
-              grid: {
-                color: "rgba(0,0,0,0.05)"   // 淡格線
-              },
-              ticks: {
-                font: { size: 20 },
-                maxRotation: 0,
-                autoSkip: true
-              }
+              grid: { color: "rgba(0,0,0,0.05)" },
+              ticks: { font: { size: 20 }, maxRotation: 0, autoSkip: true }
             }
           },
           plugins: {
@@ -240,16 +231,14 @@
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  const date = context.label;
-                  const value = context.formattedValue;
-                  return `日期: ${date} | 分數: ${value}`;
+                  return `日期: ${context.label} | 分數: ${context.formattedValue}`;
                 }
               }
             }
           },
           animation: {
             duration: 1500,
-            easing: 'easeOutQuart'   // 線條慢慢浮現
+            easing: 'easeOutQuart'
           }
         }
       });
@@ -257,3 +246,9 @@
 
     form.addEventListener('submit', e => {
       e.preventDefault();
+      const data = {
+        date: form.date.value,
+        time: form.time.value,
+        consistency: parseInt(form.consistency.value),
+        color: form.color.value,
+        shape: form.shape
