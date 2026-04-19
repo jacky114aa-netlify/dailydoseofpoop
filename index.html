@@ -101,6 +101,17 @@
     const ctx = document.getElementById('trendChart').getContext('2d');
     let chart;
 
+    function calculateScore(r) {
+      let score = 100;
+      score -= Math.abs(3 - r.consistency) * 15;
+      if (["黑色","綠色","黃色"].includes(r.color)) score -= 10;
+      if (["顆粒狀","液體"].includes(r.shape)) score -= 10;
+      if (r.pain === "是") score -= 15;
+      if (r.blood === "是") score -= 20;
+      if (r.smooth === "不暢通") score -= 10;
+      return Math.max(score, 0);
+    }
+
     function loadRecords() {
       recordsDiv.innerHTML = '';
       const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
@@ -121,17 +132,6 @@
       updateChart(records);
     }
 
-    function calculateScore(r) {
-      let score = 100;
-      score -= Math.abs(3 - r.consistency) * 15;
-      if (["黑色","綠色","黃色"].includes(r.color)) score -= 10;
-      if (["顆粒狀","液體"].includes(r.shape)) score -= 10;
-      if (r.pain === "是") score -= 15;
-      if (r.blood === "是") score -= 20;
-      if (r.smooth === "不暢通") score -= 10;
-      return Math.max(score, 0);
-    }
-
     function updateChart(records) {
       const labels = records.map(r => r.date);
       const scores = records.map(r => calculateScore(r));
@@ -150,4 +150,34 @@
           }]
         },
         options: {
-          scales:
+          scales: {
+            y: { beginAtZero: true, max: 100 }
+          }
+        }
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = {
+        date: form.date.value,
+        time: form.time.value,
+        consistency: parseInt(form.consistency.value),
+        color: form.color.value,
+        shape: form.shape.value,
+        pain: form.pain.value,
+        blood: form.blood.value,
+        smooth: form.smooth.value,
+        notes: form.notes.value
+      };
+      const records = JSON.parse(localStorage.getItem('poopRecords') || '[]');
+      records.push(data);
+      localStorage.setItem('poopRecords', JSON.stringify(records));
+      form.reset();
+      loadRecords();
+    });
+
+    loadRecords();
+  </script>
+</body>
+</html>
